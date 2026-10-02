@@ -1,0 +1,23 @@
+{
+  "source": "de Chazal, O'Dwyer & Reilly, 'Automatic Classification of Heartbeats Using ECG Morphology and Heartbeat Interval Features', IEEE TBME, 2004",
+  "database": "MIT-BIH Arrhythmia Database, PhysioNet, v1.0.0",
+  "note": "Split is at the PATIENT/RECORD level, not the beat level. No record in ds1 may ever appear in ds2, and vice versa. Records in 'excluded' are left out entirely (paced-beat patients, not compliant with AAMI EC57 evaluation).",
+  "ds1_training": [
+    "101", "106", "108", "109", "112", "114", "115", "116", "118", "119",
+    "122", "124", "201", "203", "205", "207", "208", "209", "215", "220",
+    "223", "230"
+  ],
+  "ds2_testing": [
+    "100", "103", "105", "111", "113", "117", "121", "123", "200", "202",
+    "210", "212", "213", "214", "219", "221", "222", "228", "231", "232",
+    "233", "234"
+  ],
+  "excluded_paced_patients": ["102", "104", "107", "217"],
+  "expected_counts": {
+    "ds1_records": 22,
+    "ds2_records": 22,
+    "excluded_records": 4,
+    "total_records_used": 44,
+    "note_on_beat_counts": "Reported total beats vary slightly by source depending on annotation-symbol mapping (~51,000 in DS1, ~49,700 in DS2 is the commonly cited range). Treat as a sanity-check range, not an exact target, since your own counting logic may legitimately differ by a small margin depending on how you map annotation symbols to AAMI classes."
+  }
+}
