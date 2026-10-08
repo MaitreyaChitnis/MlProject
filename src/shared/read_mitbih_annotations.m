@@ -71,4 +71,5 @@ function [ann_samples, ann_symbols] = read_mitbih_annotations(atr_file)
                 end
         end
     end
+    ann_samples = ann_samples + 1;
 end
