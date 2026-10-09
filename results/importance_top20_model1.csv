@@ -1,0 +1,21 @@
+Rank,Column,Feature,Importance
+1,1,RR_prev,2.68606220217091
+2,2,RR_next,1.52312344133813
+3,3,RR_local_avg,1.33509456097106
+4,101,morphology +7 samples (+19 ms),1.2752106620493
+5,108,morphology +14 samples (+39 ms),1.144568798125
+6,111,morphology +17 samples (+47 ms),1.10634135700754
+7,100,morphology +6 samples (+17 ms),0.997127233639567
+8,109,morphology +15 samples (+42 ms),0.976065365242932
+9,95,morphology +1 samples (+3 ms),0.966769778779749
+10,102,morphology +8 samples (+22 ms),0.960483510083234
+11,105,morphology +11 samples (+31 ms),0.955385341950888
+12,99,morphology +5 samples (+14 ms),0.932881232765919
+13,103,morphology +9 samples (+25 ms),0.920723375062495
+14,89,morphology -5 samples (-14 ms),0.908346144005015
+15,104,morphology +10 samples (+28 ms),0.907778563581713
+16,107,morphology +13 samples (+36 ms),0.902116719709268
+17,110,morphology +16 samples (+44 ms),0.901146727712345
+18,113,morphology +19 samples (+53 ms),0.89298373183869
+19,98,morphology +4 samples (+11 ms),0.861318219040109
+20,88,morphology -6 samples (-17 ms),0.833155853464696
