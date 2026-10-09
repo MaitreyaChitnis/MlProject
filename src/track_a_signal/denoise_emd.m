@@ -1,23 +1,29 @@
 function denoised_signal = denoise_emd(signal, fs)
-% DENOISE_EMD  Empirical Mode Decomposition based denoising.
+% DENOISE_EMD  EMD denoising with data-driven IMF selection (v2).
 %   denoised_signal = denoise_emd(signal, fs)
-% Requires Signal Processing Toolbox (emd function). fs accepted but unused.
+% Requires Signal Processing Toolbox (emd, meanfreq).
 %
-% Drops the first 2 IMFs (usually high-frequency noise) and the last IMF
-% (usually baseline wander / residual trend), keeps the middle IMFs.
-% TUNE THESE NUMBERS by visually inspecting a few records - the right
-% number to drop can vary record to record.
+% Instead of dropping a fixed number of IMFs, each IMF is kept only if its
+% mean (power-weighted) frequency lies inside the ECG band, 0.5-40 Hz.
+%   - very high-frequency IMFs (> 40 Hz)  -> muscle/electrode noise, dropped
+%   - very low-frequency IMFs (< 0.5 Hz)  -> baseline wander, dropped
+% This adapts to each record instead of using one hand-picked rule.
 
-    imf = emd(signal, 'Display', 0);
-    num_imfs = size(imf, 2);
+    f_low  = 0.5;   % Hz
+    f_high = 40;    % Hz
 
-    drop_first = 2;  % high-frequency noise IMFs to drop
-    drop_last = 1;   % baseline wander IMF to drop
+    imf = emd(signal, 'Display', 0);     % N x K matrix, one IMF per column
+    K = size(imf, 2);
 
-    keep_idx = (drop_first+1):(num_imfs-drop_last);
-    if isempty(keep_idx)
-        keep_idx = 1:num_imfs; % fallback safety net if too few IMFs
+    keep = false(1, K);
+    for k = 1:K
+        f = meanfreq(imf(:, k), fs);
+        keep(k) = (f >= f_low) && (f <= f_high);
     end
 
-    denoised_signal = sum(imf(:, keep_idx), 2);
+    if ~any(keep)          % safety net: never return an empty signal
+        keep(:) = true;
+    end
+
+    denoised_signal = sum(imf(:, keep), 2);
 end
