@@ -19,6 +19,9 @@ function record = load_record(record_id, data_dir)
 %   record.id          : the record id you asked for, as a string
 %   record.signal      : Nx2 numeric array (physical units), one column per lead
 %   record.fs          : sampling frequency in Hz (360 for MIT-BIH)
+%   record.lead_names  : cell array of lead labels, one per column of signal
+%                        (e.g. {'MLII','V5'}). NOTE: record 114 has them swapped,
+%                        so always pick a lead by NAME, never assume column 1.
 %   record.ann_samples : column vector of sample indices where each annotated beat occurs
 %   record.ann_symbols : cell array of annotation symbols (e.g. 'N','V','A',...),
 %                        same length and order as ann_samples
@@ -52,6 +55,7 @@ function record = load_record(record_id, data_dir)
     record.id          = record_id;
     record.signal      = signal;
     record.fs          = info.fs;
+    record.lead_names  = {info.signals.description};
     record.ann_samples = ann_samples;
     record.ann_symbols = ann_symbols;
 
