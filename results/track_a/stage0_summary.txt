@@ -1,0 +1,36 @@
+
+==================== PASTE FROM HERE ====================
+MATLAB 26.1.0.3312084 (R2026a) Update 4
+Records: 44 (DS1 22, DS2 22), lead MLII, first 300 s
+
+-- Annotation cleanup --
+Whole records : 103724 annotations -> 100733 beats,  2991 non-beats removed
+First 300 s   :  17264 annotations ->  16755 beats,   509 non-beats removed
+
+Removed symbols    whole   first300s
+   '"'             437        31
+   '+'            1173       214
+   '?'            1381       264
+
+Most non-beats removed in first 300 s: 207 (162)  231 (36)  228 (34)  230 (34)  200 (29)  
+
+-- Beats per AAMI class (whole records) --
+               N        S        V        F        Q     total
+DS1        45866      944     3788      415        8     51021
+DS2        44259     1837     3221      388        7     49712
+
+-- Detection, mean over 44 records (percent) --
+variant    sens_OLD  ppv_OLD   sens_NEW  ppv_NEW   min_sens_NEW  min_ppv_NEW
+none         97.41     99.01     99.78     98.51        98.00        69.02
+bandpass     97.41     99.01     99.78     98.51        98.00        69.02
+wavelet      97.41     99.01     99.78     98.51        98.00        69.02
+emd          97.41     99.01     99.78     98.51        98.00        69.02
+
+-- 5 hardest records per variant (NEW ground truth, by mean of sens and PPV) --
+none       207(S98.1/P69.6) 108(S100.0/P69.0) 203(S98.0/P99.2) 210(S98.9/P99.5) 228(S99.7/P98.9)
+bandpass   207(S98.1/P69.6) 108(S100.0/P69.0) 203(S98.0/P99.2) 228(S99.7/P98.6) 210(S98.9/P99.5)
+wavelet    207(S98.1/P69.6) 108(S100.0/P69.0) 203(S98.0/P99.2) 210(S98.9/P99.5) 228(S99.7/P98.9)
+emd        207(S98.1/P69.6) 108(S100.0/P69.0) 203(S98.0/P99.2) 210(S98.9/P99.5) 228(S99.7/P98.9)
+
+Sanity: NaN metrics = 0, DS1/DS2 overlap = 0, rows = 176 (expected 176)
+===================== PASTE TO HERE =====================
