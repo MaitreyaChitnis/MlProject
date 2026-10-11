@@ -1,0 +1,54 @@
+
+==================== PASTE FROM HERE ====================
+MATLAB 26.1.0.3312084 (R2026a) Update 4
+Model for ALL variants: baseline (empirical prior, leaf 1) | prior=empirical, leaf=1, trees=100 | seeds=1 | bootstrap=2000 patient resamples
+DS1 records: 22 | DS2 records: 22 | classes scored in macro-F1: N,S,V,F (Q has only ~7 beats)
+
+---- Peak source: groundtruth ----
+variant    acc%   macroF1 [95% CI]         S sens  S prec  S F1   V F1   missed  false
+none       92.51   0.459 [0.392, 0.522]     1.9    36.8  0.036  0.792       0      0
+bandpass   87.68   0.397 [0.323, 0.491]     2.1    52.0  0.041  0.614       0      0
+wavelet    92.59   0.456 [0.392, 0.520]     1.9    28.9  0.036  0.805       0      0
+emd        89.37   0.408 [0.329, 0.498]     1.6    45.3  0.031  0.653       0      0
+
+---- Peak source: detected ----
+variant    acc%   macroF1 [95% CI]         S sens  S prec  S F1   V F1   missed  false
+none       92.76   0.446 [0.376, 0.515]     0.8    36.6  0.016  0.793     218    208
+bandpass   90.30   0.414 [0.324, 0.503]     1.7    46.3  0.033  0.675     227    216
+wavelet    92.86   0.450 [0.384, 0.519]     1.3    58.5  0.026  0.799     214    204
+emd        89.65   0.404 [0.324, 0.488]     1.0    54.5  0.019  0.649     220    210
+
+---- Paired difference vs 'none' (patient bootstrap; 'yes' = 95% CI excludes 0) ----
+        <strong>source</strong>           <strong>variant</strong>         <strong>metric</strong>       <strong>mean_diff_vs_none</strong>       <strong>ci_lo</strong>          <strong>ci_hi</strong>       <strong>ci_excludes_zero</strong>
+    <strong>_______________</strong>    <strong>____________</strong>    <strong>___________</strong>    <strong>_________________</strong>    <strong>___________</strong>    <strong>___________</strong>    <strong>________________</strong>
+
+    {'groundtruth'}    {'bandpass'}    {'macroF1'}        -0.055423          -0.086544     -0.0040871        {'yes'}     
+    {'groundtruth'}    {'bandpass'}    {'S_F1'   }        0.0092419          -0.018786       0.071252        {'no' }     
+    {'groundtruth'}    {'bandpass'}    {'V_F1'   }         -0.16437           -0.24846      -0.023364        {'yes'}     
+    {'groundtruth'}    {'wavelet' }    {'macroF1'}        -0.001788          -0.008402      0.0058873        {'no' }     
+    {'groundtruth'}    {'wavelet' }    {'S_F1'   }       -0.0023624          -0.019255      0.0085342        {'no' }     
+    {'groundtruth'}    {'wavelet' }    {'V_F1'   }         0.012353        -0.00071453       0.026831        {'no' }     
+    {'groundtruth'}    {'emd'     }    {'macroF1'}        -0.045315          -0.076723     -0.0045375        {'yes'}     
+    {'groundtruth'}    {'emd'     }    {'S_F1'   }       -0.0051233          -0.072822         0.0709        {'no' }     
+    {'groundtruth'}    {'emd'     }    {'V_F1'   }          -0.1249           -0.18859      -0.013398        {'yes'}     
+    {'detected'   }    {'bandpass'}    {'macroF1'}        -0.030488          -0.063035    -0.00037198        {'yes'}     
+    {'detected'   }    {'bandpass'}    {'S_F1'   }         0.028268          0.0028235       0.091813        {'yes'}     
+    {'detected'   }    {'bandpass'}    {'V_F1'   }         -0.10299           -0.17659      -0.014037        {'yes'}     
+    {'detected'   }    {'wavelet' }    {'macroF1'}        0.0039053         -0.0084166       0.023017        {'no' }     
+    {'detected'   }    {'wavelet' }    {'S_F1'   }         0.019465                  0       0.092632        {'no' }     
+    {'detected'   }    {'wavelet' }    {'V_F1'   }        0.0033388          -0.020403        0.02373        {'no' }     
+    {'detected'   }    {'emd'     }    {'macroF1'}        -0.041471          -0.062544      -0.011887        {'yes'}     
+    {'detected'   }    {'emd'     }    {'S_F1'   }        0.0070772          -0.016972       0.056746        {'no' }     
+    {'detected'   }    {'emd'     }    {'V_F1'   }         -0.13303           -0.20258      -0.027599        {'yes'}     
+
+Detector on DS2 (detected source): true beats / missed / false detections / median peak offset (samples)
+  none       49712 /   218 /   208 / 0.8
+  bandpass   49712 /   227 /   216 / 0.6
+  wavelet    49712 /   214 /   204 / 0.8
+  emd        49712 /   220 /   210 / 0.8
+
+Sanity: DS1/DS2 overlap = 0 (asserted), NaN in features = 0 (asserted).
+Reference: your friend's ground-truth, raw-signal results were baseline 91.48% acc / macro-F1 0.447 and
+tuned 88.50% / 0.460. The groundtruth/none row should be close to the one matching the model above.
+Total time: 15.8 min
+===================== PASTE TO HERE =====================

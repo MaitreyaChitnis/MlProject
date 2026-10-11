@@ -34,16 +34,24 @@ t_start = tic;
 cfg.variant_names = {'none', 'bandpass', 'wavelet', 'emd'};
 cfg.variant_funcs = {@denoise_none, @denoise_bandpass, @denoise_wavelet, @denoise_emd};
 cfg.sources       = {'groundtruth', 'detected'};
-cfg.n_seeds       = 3;       % forests per combination (different seeds)
+cfg.n_seeds       = 3;       % forests per combination (different seeds). Use 1 for a quick test
 cfg.n_boot        = 2000;    % patient-level bootstrap resamples
 cfg.use_tuned_config = true; % use the phase-5 settings if data/processed/tuned_rf.mat exists
 cfg.rebuild       = false;   % true = ignore cached datasets and rebuild
 cfg.use_parallel  = false;   % true needs the Parallel Computing Toolbox
 cfg.ds_opts       = struct('duration_s', Inf, 'half_window', 90, 'n_avg', 10, ...
                            'match_ms', 50, 'refine_ms', 100);
+cfg.diagnostic_variants = true;  % adds 'highpass' (0.5 Hz only) and 'lowpass' (40 Hz only)
+cfg.prior_override = '';         % '' = keep model settings below; or 'empirical' | 'sqrt' | 'uniform'
+cfg.leaf_override  = [];         % [] = keep; or a number such as 5
 cfg.out_dir       = fullfile('results', 'integration');
 cfg.cache_dir     = fullfile('data', 'processed', 'variants');
 % -------------------------------------------------------
+
+if cfg.diagnostic_variants
+    cfg.variant_names = [cfg.variant_names, {'highpass', 'lowpass'}];
+    cfg.variant_funcs = [cfg.variant_funcs, {@denoise_highpass, @denoise_lowpass}];
+end
 
 classes = 'NSVFQ';
 nC      = numel(classes);
@@ -76,6 +84,14 @@ if cfg.use_tuned_config
             ['%s not found - using the BASELINE settings instead.\n' ...
              'Run phase5_tuning.m first if you want the tuned settings.'], tuned_file);
     end
+end
+if ~isempty(cfg.prior_override)
+    model.prior = cfg.prior_override;
+    model.name  = ['override prior = ' cfg.prior_override];
+end
+if ~isempty(cfg.leaf_override)
+    model.leaf = cfg.leaf_override;
+    model.name = [model.name ', leaf ' num2str(cfg.leaf_override)];
 end
 fprintf('Model for ALL variants: %s | prior=%s, MinLeafSize=%d, trees=%d, seeds=%d\n\n', ...
     model.name, model.prior, model.leaf, model.n_trees, cfg.n_seeds);
@@ -131,6 +147,7 @@ for s = 1:nS
 
         for sd = 1:cfg.n_seeds
             rng(sd);
+            fprintf('  seed %d: training forest, about 1-2 min, nothing prints until it is done ...\n', sd);
             tic;
             mdl = TreeBagger(model.n_trees, Xtr, Ytr, ...
                 'Prior', make_prior(Ytr, model.prior), ...
