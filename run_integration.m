@@ -54,7 +54,7 @@ cfg.prior_override = '';         % '' = keep model settings below; or 'empirical
 cfg.leaf_override  = [];         % [] = keep; or a number such as 5
 cfg.out_dir       = fullfile('results', 'integration');
 cfg.cache_dir     = fullfile('data', 'processed', 'variants');
-cfg.preset = 'standard';  % 'standard' | 'beatnorm' | 'hpsweep'   (explained in the header)
+cfg.preset = 'hpsweep';  % 'standard' | 'beatnorm' | 'hpsweep'   (explained in the header)
 cfg.run_name = '';         % optional label for a SEPARATE results folder, e.g. '_tuned' -> results\integration_tuned
 % -------------------------------------------------------
 
