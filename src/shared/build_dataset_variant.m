@@ -16,6 +16,16 @@ function ds = build_dataset_variant(ids, variant_fn, peak_source, opts)
 %                  duration_s [Inf = whole record]
 %                  half_window [90]   n_avg [10]   (same as extract_features)
 %                  match_ms [50]  refine_ms [100]
+%                  beat_norm ['none'] : 'pre' subtracts, from each beat's morphology samples,
+%                                    the MEDIAN of its first norm_samples samples (the
+%                                    baseline before the QRS). Removes each beat's own
+%                                    DC/baseline level whatever the filter did.
+%                  norm_samples [18] (0.05 s at 360 Hz)
+%                  noise_snr_db [] : if a number, synthetic noise (baseline wander +
+%                                    60 Hz powerline + broadband, equal power shares)
+%                                    is added to the MLII signal BEFORE denoising, at
+%                                    that SNR relative to the clean signal variance.
+%                                    Deterministic per record. Ground truth is untouched.
 %
 %   OUTPUT struct ds:
 %     .X .y .row_record .record_ids    same layout as build_datasets.m
@@ -41,6 +51,9 @@ function ds = build_dataset_variant(ids, variant_fn, peak_source, opts)
     if nargin < 4 || isempty(opts), opts = struct(); end
     opts = fill_defaults(opts);
 
+    if ~any(strcmp(opts.beat_norm, {'none', 'pre'}))
+        error('build_dataset_variant:badNorm', 'opts.beat_norm must be ''none'' or ''pre''.');
+    end
     peak_source = lower(peak_source);
     if ~any(strcmp(peak_source, {'groundtruth', 'detected'}))
         error('build_dataset_variant:badSource', ...
@@ -66,6 +79,9 @@ function ds = build_dataset_variant(ids, variant_fn, peak_source, opts)
         end
 
         x = rec.signal(1:nUse, lead);
+        if ~isempty(opts.noise_snr_db)
+            x = add_ecg_noise(x, fs, opts.noise_snr_db, id);
+        end
         y = variant_fn(x, fs);
         y = y(:);
         if numel(y) ~= nUse
@@ -106,6 +122,12 @@ function ds = build_dataset_variant(ids, variant_fn, peak_source, opts)
         rec2 = struct('signal', y, 'fs', fs, 'ann_samples', locs, 'ann_symbols', {syms});
         [X, lab, bs] = extract_features(rec2, 1, opts.half_window, opts.n_avg);
 
+        % optional per-beat baseline normalisation of the morphology columns (4:end)
+        if strcmp(opts.beat_norm, 'pre') && ~isempty(X)
+            base = median(X(:, 3 + (1:opts.norm_samples)), 2);
+            X(:, 4:end) = X(:, 4:end) - base;
+        end
+
         % drop rows that belong to unmatched (false) detections
         [tf, pos] = ismember(bs, locs);
         if ~all(tf)
@@ -144,6 +166,9 @@ function opts = fill_defaults(opts)
     d.n_avg       = 10;
     d.match_ms    = 50;
     d.refine_ms   = 100;
+    d.noise_snr_db = [];
+    d.beat_norm   = 'none';
+    d.norm_samples = 18;
     f = fieldnames(d);
     for i = 1:numel(f)
         if ~isfield(opts, f{i}) || isempty(opts.(f{i}))
@@ -185,5 +210,32 @@ function mi = match_to_truth(det, gt, tol)
             mi(i) = nearest(i);
             used(nearest(i)) = true;
         end
+    end
+end
+
+function y = add_ecg_noise(x, fs, snr_db, id)
+% Add synthetic noise with three components of EQUAL power:
+%   baseline wander (0.3 Hz + 0.15 Hz sinusoids), 60 Hz powerline, white noise.
+% Total noise power = var(x) / 10^(snr_db/10). Random phases and the white
+% noise are generated from a seed derived from the record id and the SNR, so
+% every denoising variant sees exactly the same noisy signal. The global
+% random state is restored afterwards.
+    x = x(:);
+    n = numel(x);
+    t = (0:n-1)' / fs;
+    st = rng;
+    cleanup = onCleanup(@() rng(st));
+    rng(mod(sum(double(char(id))) * 1000 + round(snr_db * 10), 2^31 - 1));
+    ph = 2 * pi * rand(3, 1);
+    comps = cell(3, 1);
+    comps{1} = sin(2*pi*0.3*t + ph(1)) + 0.5 * sin(2*pi*0.15*t + ph(2));
+    comps{2} = sin(2*pi*60*t + ph(3));
+    comps{3} = randn(n, 1);
+    p_noise = var(x) / 10^(snr_db / 10);
+    y = x;
+    for k = 1:3
+        c = comps{k} - mean(comps{k});
+        c = c / std(c);
+        y = y + c * sqrt(p_noise / 3);
     end
 end

@@ -17,6 +17,14 @@
 %  Only the denoising step differs between variants. Record lists come from
 %  data/splits/ds1_ds2_split.json via load_split.m.
 %
+%  PRESETS (cfg.preset near the top)
+%    'standard'  the full comparison (default)
+%    'beatnorm'  same variants, ground-truth peaks, but every beat's own baseline is
+%                subtracted before classification. Separates 'the forest uses the
+%                baseline level' from 'the filter distorts the beat shape'.
+%    'hpsweep'   no filter vs high-pass at 0.05, 0.1, 0.25 and 0.5 Hz (ground truth).
+%  Each preset writes to its own results folder and its own cache files.
+%
 %  OUTPUTS (results/integration/)
 %    integration_summary.csv      one row per source x variant
 %    integration_vs_none.csv      paired bootstrap differences vs 'none'
@@ -31,10 +39,9 @@ addpath(genpath('src'));
 t_start = tic;
 
 %% ---------------- settings you may edit ----------------
-cfg.run_name      = 'tuned';
 cfg.variant_names = {'none', 'bandpass', 'wavelet', 'emd'};
 cfg.variant_funcs = {@denoise_none, @denoise_bandpass, @denoise_wavelet, @denoise_emd};
-cfg.sources       = {'groundtruth'};
+cfg.sources       = {'groundtruth', 'detected'};
 cfg.n_seeds       = 3;       % forests per combination (different seeds). Use 1 for a quick test
 cfg.n_boot        = 2000;    % patient-level bootstrap resamples
 cfg.use_tuned_config = true; % use the phase-5 settings if data/processed/tuned_rf.mat exists
@@ -45,13 +52,44 @@ cfg.ds_opts       = struct('duration_s', Inf, 'half_window', 90, 'n_avg', 10, ..
 cfg.diagnostic_variants = true;  % adds 'highpass' (0.5 Hz only) and 'lowpass' (40 Hz only)
 cfg.prior_override = '';         % '' = keep model settings below; or 'empirical' | 'sqrt' | 'uniform'
 cfg.leaf_override  = [];         % [] = keep; or a number such as 5
-cfg.out_dir       = fullfile('results', ['integration_' cfg.run_name]);
+cfg.out_dir       = fullfile('results', 'integration');
 cfg.cache_dir     = fullfile('data', 'processed', 'variants');
+cfg.preset = 'standard';  % 'standard' | 'beatnorm' | 'hpsweep'   (explained in the header)
+cfg.run_name = '';         % optional label for a SEPARATE results folder, e.g. '_tuned' -> results\integration_tuned
 % -------------------------------------------------------
+
+cfg.tag = '';
+switch cfg.preset
+    case 'standard'
+        % the settings above, unchanged
+    case 'beatnorm'      % same variants, but each beat's own baseline is subtracted
+        cfg.tag     = '_beatnorm';
+        cfg.sources = {'groundtruth'};
+        cfg.ds_opts.beat_norm = 'pre';
+    case 'hpsweep'       % high-pass cutoff sweep: 0.05 / 0.1 / 0.25 / 0.5 Hz
+        cfg.tag     = '_hpsweep';
+        cfg.sources = {'groundtruth'};
+        cfg.diagnostic_variants = false;
+        cfg.variant_names = {'none', 'hp005', 'hp010', 'hp025', 'hp050'};
+        cfg.variant_funcs = {@denoise_none, ...
+            @(x, fs) denoise_highpass_cut(x, fs, 0.05), @(x, fs) denoise_highpass_cut(x, fs, 0.10), ...
+            @(x, fs) denoise_highpass_cut(x, fs, 0.25), @(x, fs) denoise_highpass_cut(x, fs, 0.50)};
+    otherwise
+        error('Unknown cfg.preset: %s', cfg.preset);
+end
+cfg.out_dir = fullfile('results', ['integration' cfg.tag cfg.run_name]);
 
 if cfg.diagnostic_variants
     cfg.variant_names = [cfg.variant_names, {'highpass', 'lowpass'}];
     cfg.variant_funcs = [cfg.variant_funcs, {@denoise_highpass, @denoise_lowpass}];
+end
+
+for v = 1:numel(cfg.variant_funcs)
+    fname = func2str(cfg.variant_funcs{v});
+    if ~startsWith(fname, '@') && exist(fname, 'file') == 0
+        error('run_integration:missingFunction', ...
+            'Denoising function "%s" not found. Put %s.m in src\\track_a_signal\\ and restart MATLAB.', fname, fname);
+    end
 end
 
 classes = 'NSVFQ';
@@ -118,6 +156,19 @@ for s = 1:nS
         fprintf('\n################ [%d/%d] source = %s | variant = %s ################\n', ...
             c, nCombo, src, vname);
 
+        % ---- resume: skip a combination that already finished with identical settings ----
+        ck_file = fullfile(cfg.cache_dir, sprintf('result_%s_%s%s%s.mat', src, vname, cfg.tag, cfg.run_name));
+        ck_meta = struct('model', model, 'n_seeds', cfg.n_seeds, 'ds_opts', cfg.ds_opts, ...
+                         'ids1', {ds1_ids(:)}, 'ids2', {ds2_ids(:)});
+        if isfile(ck_file) && ~cfg.rebuild
+            CK = load(ck_file);
+            if isequal(CK.ck_meta, ck_meta)
+                R(c) = CK.Rc;
+                fprintf('  (finished result loaded from checkpoint: %s)\n', ck_file);
+                continue;
+            end
+        end
+
         tr = get_dataset('train', ds1_ds2_pick(ds1_ids), src, vname, cfg.variant_funcs{v}, cfg);
         te = get_dataset('test',  ds1_ds2_pick(ds2_ids), src, vname, cfg.variant_funcs{v}, cfg);
 
@@ -169,6 +220,9 @@ for s = 1:nS
             fprintf('  seed %d: accuracy %.2f %% | macro-F1 %.3f | S sens %.1f %% | trained+tested in %.0f s\n', ...
                 sd, 100 * m.acc, m.macro_f1, 100 * m.sens(2), toc);
         end
+        Rc = R(c);
+        save(ck_file, 'Rc', 'ck_meta');
+        fprintf('  (checkpoint saved: %s)\n', ck_file);
     end
 end
 
@@ -262,6 +316,7 @@ saveas(fig, fullfile(cfg.out_dir, 'integration_figure.png'));
 diary(summary_file);
 fprintf('\n==================== PASTE FROM HERE ====================\n');
 fprintf('MATLAB %s\n', version);
+fprintf('Preset: %s%s | per-beat normalisation: %s\n', cfg.preset, cfg.run_name, ifelse_norm(cfg.ds_opts));
 fprintf('Model for ALL variants: %s | prior=%s, leaf=%d, trees=%d | seeds=%d | bootstrap=%d patient resamples\n', ...
     model.name, model.prior, model.leaf, model.n_trees, cfg.n_seeds, cfg.n_boot);
 fprintf('DS1 records: %d | DS2 records: %d | classes scored in macro-F1: N,S,V,F (Q has only ~7 beats)\n', ...
@@ -301,13 +356,17 @@ diary off;
 fprintf('\nSaved in %s: integration_summary.csv, integration_vs_none.csv, integration_figure.png, integration_summary.txt\n', cfg.out_dir);
 
 %% ======================= local functions =======================
+function t = ifelse_norm(o)
+    if isfield(o, 'beat_norm'), t = o.beat_norm; else, t = 'none'; end
+end
+
 function ids = ds1_ds2_pick(x)
     ids = x(:);
 end
 
 function ds = get_dataset(role, ids, source, vname, vfunc, cfg)
 % Load a cached dataset if it was built with identical settings, else build and cache it.
-    fn = fullfile(cfg.cache_dir, sprintf('ds_%s_%s_%s.mat', role, source, vname));
+    fn = fullfile(cfg.cache_dir, sprintf('ds_%s_%s_%s%s.mat', role, source, vname, cfg.tag));
     meta = struct('ids', {ids}, 'opts', cfg.ds_opts, 'source', source, 'variant', vname);
     if isfile(fn) && ~cfg.rebuild
         S = load(fn);
