@@ -1,54 +1,72 @@
 
 ==================== PASTE FROM HERE ====================
 MATLAB 26.1.0.3312084 (R2026a) Update 4
-Model for ALL variants: baseline (empirical prior, leaf 1) | prior=empirical, leaf=1, trees=100 | seeds=1 | bootstrap=2000 patient resamples
+Model for ALL variants: baseline (empirical prior, leaf 1) | prior=empirical, leaf=1, trees=100 | seeds=3 | bootstrap=2000 patient resamples
 DS1 records: 22 | DS2 records: 22 | classes scored in macro-F1: N,S,V,F (Q has only ~7 beats)
 
 ---- Peak source: groundtruth ----
 variant    acc%   macroF1 [95% CI]         S sens  S prec  S F1   V F1   missed  false
-none       92.51   0.459 [0.392, 0.522]     1.9    36.8  0.036  0.792       0      0
-bandpass   87.68   0.397 [0.323, 0.491]     2.1    52.0  0.041  0.614       0      0
-wavelet    92.59   0.456 [0.392, 0.520]     1.9    28.9  0.036  0.805       0      0
-emd        89.37   0.408 [0.329, 0.498]     1.6    45.3  0.031  0.653       0      0
+none       92.49   0.457 [0.390, 0.527]     2.4    40.7  0.046  0.794       0      0
+bandpass   87.67   0.400 [0.326, 0.498]     2.7    49.7  0.052  0.613       0      0
+wavelet    92.21   0.454 [0.383, 0.528]     2.5    33.7  0.046  0.783       0      0
+emd        89.35   0.407 [0.331, 0.497]     1.7    33.2  0.032  0.651       0      0
+highpass   89.10   0.417 [0.337, 0.508]     2.4    31.7  0.044  0.681       0      0
+lowpass    92.16   0.455 [0.390, 0.525]     2.3    39.8  0.043  0.790       0      0
 
 ---- Peak source: detected ----
 variant    acc%   macroF1 [95% CI]         S sens  S prec  S F1   V F1   missed  false
-none       92.76   0.446 [0.376, 0.515]     0.8    36.6  0.016  0.793     218    208
-bandpass   90.30   0.414 [0.324, 0.503]     1.7    46.3  0.033  0.675     227    216
-wavelet    92.86   0.450 [0.384, 0.519]     1.3    58.5  0.026  0.799     214    204
-emd        89.65   0.404 [0.324, 0.488]     1.0    54.5  0.019  0.649     220    210
+none       92.94   0.454 [0.391, 0.511]     1.0    39.5  0.019  0.813     218    208
+bandpass   90.09   0.413 [0.327, 0.497]     1.6    45.2  0.031  0.674     227    216
+wavelet    92.94   0.453 [0.388, 0.513]     0.9    47.6  0.019  0.807     214    204
+emd        89.68   0.405 [0.324, 0.490]     1.1    42.6  0.021  0.653     220    210
+highpass   90.75   0.417 [0.329, 0.513]     1.3    47.1  0.026  0.690     219    209
+lowpass    92.71   0.452 [0.388, 0.504]     0.9    30.5  0.017  0.804     237    227
 
 ---- Paired difference vs 'none' (patient bootstrap; 'yes' = 95% CI excludes 0) ----
-        <strong>source</strong>           <strong>variant</strong>         <strong>metric</strong>       <strong>mean_diff_vs_none</strong>       <strong>ci_lo</strong>          <strong>ci_hi</strong>       <strong>ci_excludes_zero</strong>
-    <strong>_______________</strong>    <strong>____________</strong>    <strong>___________</strong>    <strong>_________________</strong>    <strong>___________</strong>    <strong>___________</strong>    <strong>________________</strong>
+        <strong>source</strong>           <strong>variant</strong>         <strong>metric</strong>       <strong>mean_diff_vs_none</strong>      <strong>ci_lo</strong>         <strong>ci_hi</strong>       <strong>ci_excludes_zero</strong>
+    <strong>_______________</strong>    <strong>____________</strong>    <strong>___________</strong>    <strong>_________________</strong>    <strong>__________</strong>    <strong>__________</strong>    <strong>________________</strong>
 
-    {'groundtruth'}    {'bandpass'}    {'macroF1'}        -0.055423          -0.086544     -0.0040871        {'yes'}     
-    {'groundtruth'}    {'bandpass'}    {'S_F1'   }        0.0092419          -0.018786       0.071252        {'no' }     
-    {'groundtruth'}    {'bandpass'}    {'V_F1'   }         -0.16437           -0.24846      -0.023364        {'yes'}     
-    {'groundtruth'}    {'wavelet' }    {'macroF1'}        -0.001788          -0.008402      0.0058873        {'no' }     
-    {'groundtruth'}    {'wavelet' }    {'S_F1'   }       -0.0023624          -0.019255      0.0085342        {'no' }     
-    {'groundtruth'}    {'wavelet' }    {'V_F1'   }         0.012353        -0.00071453       0.026831        {'no' }     
-    {'groundtruth'}    {'emd'     }    {'macroF1'}        -0.045315          -0.076723     -0.0045375        {'yes'}     
-    {'groundtruth'}    {'emd'     }    {'S_F1'   }       -0.0051233          -0.072822         0.0709        {'no' }     
-    {'groundtruth'}    {'emd'     }    {'V_F1'   }          -0.1249           -0.18859      -0.013398        {'yes'}     
-    {'detected'   }    {'bandpass'}    {'macroF1'}        -0.030488          -0.063035    -0.00037198        {'yes'}     
-    {'detected'   }    {'bandpass'}    {'S_F1'   }         0.028268          0.0028235       0.091813        {'yes'}     
-    {'detected'   }    {'bandpass'}    {'V_F1'   }         -0.10299           -0.17659      -0.014037        {'yes'}     
-    {'detected'   }    {'wavelet' }    {'macroF1'}        0.0039053         -0.0084166       0.023017        {'no' }     
-    {'detected'   }    {'wavelet' }    {'S_F1'   }         0.019465                  0       0.092632        {'no' }     
-    {'detected'   }    {'wavelet' }    {'V_F1'   }        0.0033388          -0.020403        0.02373        {'no' }     
-    {'detected'   }    {'emd'     }    {'macroF1'}        -0.041471          -0.062544      -0.011887        {'yes'}     
-    {'detected'   }    {'emd'     }    {'S_F1'   }        0.0070772          -0.016972       0.056746        {'no' }     
-    {'detected'   }    {'emd'     }    {'V_F1'   }         -0.13303           -0.20258      -0.027599        {'yes'}     
+    {'groundtruth'}    {'bandpass'}    {'macroF1'}        -0.051295         -0.080631    -0.0036017        {'yes'}     
+    {'groundtruth'}    {'bandpass'}    {'S_F1'   }         0.011328         -0.017943       0.07712        {'no' }     
+    {'groundtruth'}    {'bandpass'}    {'V_F1'   }         -0.16513          -0.24656       -0.0253        {'yes'}     
+    {'groundtruth'}    {'wavelet' }    {'macroF1'}       -0.0025305        -0.0099664     0.0052663        {'no' }     
+    {'groundtruth'}    {'wavelet' }    {'S_F1'   }       -0.0012764         -0.016951      0.011034        {'no' }     
+    {'groundtruth'}    {'wavelet' }    {'V_F1'   }       -0.0091456         -0.031182      0.014711        {'no' }     
+    {'groundtruth'}    {'emd'     }    {'macroF1'}        -0.046334         -0.077923    -0.0087135        {'yes'}     
+    {'groundtruth'}    {'emd'     }    {'S_F1'   }        -0.017811         -0.096148      0.040093        {'no' }     
+    {'groundtruth'}    {'emd'     }    {'V_F1'   }         -0.12942          -0.19311     -0.019895        {'yes'}     
+    {'groundtruth'}    {'highpass'}    {'macroF1'}        -0.035543         -0.065933     0.0024585        {'no' }     
+    {'groundtruth'}    {'highpass'}    {'S_F1'   }       -0.0035803         -0.056794      0.044234        {'no' }     
+    {'groundtruth'}    {'highpass'}    {'V_F1'   }        -0.096329          -0.17677      0.018446        {'no' }     
+    {'groundtruth'}    {'lowpass' }    {'macroF1'}        -0.001433        -0.0075052     0.0044472        {'no' }     
+    {'groundtruth'}    {'lowpass' }    {'S_F1'   }        -0.002851         -0.022766      0.016309        {'no' }     
+    {'groundtruth'}    {'lowpass' }    {'V_F1'   }       -0.0047543          -0.01777     0.0017656        {'no' }     
+    {'detected'   }    {'bandpass'}    {'macroF1'}        -0.037608         -0.068785    -0.0039267        {'yes'}     
+    {'detected'   }    {'bandpass'}    {'S_F1'   }         0.020662        -0.0030221      0.083884        {'no' }     
+    {'detected'   }    {'bandpass'}    {'V_F1'   }         -0.12411          -0.20871     -0.011949        {'yes'}     
+    {'detected'   }    {'wavelet' }    {'macroF1'}       -0.0006748        -0.0059121     0.0041787        {'no' }     
+    {'detected'   }    {'wavelet' }    {'S_F1'   }       -0.0002646         -0.010643     0.0091031        {'no' }     
+    {'detected'   }    {'wavelet' }    {'V_F1'   }       -0.0055388         -0.019242     0.0062025        {'no' }     
+    {'detected'   }    {'emd'     }    {'macroF1'}        -0.045262         -0.071158     -0.012035        {'yes'}     
+    {'detected'   }    {'emd'     }    {'S_F1'   }         0.004727         -0.024545      0.055932        {'no' }     
+    {'detected'   }    {'emd'     }    {'V_F1'   }         -0.14667          -0.22436     -0.030714        {'yes'}     
+    {'detected'   }    {'highpass'}    {'macroF1'}        -0.030742         -0.063165      0.006153        {'no' }     
+    {'detected'   }    {'highpass'}    {'S_F1'   }         0.012198         -0.022795      0.084012        {'no' }     
+    {'detected'   }    {'highpass'}    {'V_F1'   }          -0.1095          -0.20589    -0.0039423        {'yes'}     
+    {'detected'   }    {'lowpass' }    {'macroF1'}       -0.0044957         -0.013002    0.00081107        {'no' }     
+    {'detected'   }    {'lowpass' }    {'S_F1'   }       -0.0031553         -0.020096     0.0043714        {'no' }     
+    {'detected'   }    {'lowpass' }    {'V_F1'   }        -0.010318         -0.036258     0.0053476        {'no' }     
 
 Detector on DS2 (detected source): true beats / missed / false detections / median peak offset (samples)
   none       49712 /   218 /   208 / 0.8
   bandpass   49712 /   227 /   216 / 0.6
   wavelet    49712 /   214 /   204 / 0.8
   emd        49712 /   220 /   210 / 0.8
+  highpass   49712 /   219 /   209 / 0.8
+  lowpass    49712 /   237 /   227 / 0.7
 
 Sanity: DS1/DS2 overlap = 0 (asserted), NaN in features = 0 (asserted).
 Reference: your friend's ground-truth, raw-signal results were baseline 91.48% acc / macro-F1 0.447 and
 tuned 88.50% / 0.460. The groundtruth/none row should be close to the one matching the model above.
-Total time: 15.8 min
+Total time: 53.4 min
 ===================== PASTE TO HERE =====================
