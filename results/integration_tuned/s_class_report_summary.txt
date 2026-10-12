@@ -1,0 +1,83 @@
+[Warning: The resource 'results\integration_tuned\s_class_report_summary.txt' is currently in use.] 
+[> In <a href="matlab:matlab.lang.internal.introspective.errorDocCallback('s_class_report', 'C:\Users\Maitreya\Desktop\coding\MlProject\src\track_b_ml\s_class_report.m', 16)" style="font-weight:bold">s_class_report</a> (<a href="matlab: opentoline('C:\Users\Maitreya\Desktop\coding\MlProject\src\track_b_ml\s_class_report.m',16,0)">line 16</a>)] 
+
+==================== PASTE FROM HERE ====================
+S-Class & Patient-Level Detailed Report (integration_tuned)
+
+--- A) Per Variant Metrics (Accuracy, Macro-F1, S-class & V-class) -------
+      <strong>variant</strong>       <strong>acc_pct</strong>    <strong>macroF1</strong>    <strong>S_sens_pct</strong>    <strong>S_ppv_pct</strong>     <strong>S_F1</strong>       <strong>V_F1</strong>  
+    <strong>____________</strong>    <strong>_______</strong>    <strong>_______</strong>    <strong>__________</strong>    <strong>_________</strong>    <strong>_______</strong>    <strong>_______</strong>
+
+    {'none'    }    88.777     0.46707      8.2789       22.393      0.12022    0.79051
+    {'bandpass'}     82.92     0.41886      13.381       22.238      0.16684    0.60317
+    {'wavelet' }    88.341     0.45732      7.9339       24.895      0.12006     0.7601
+    {'emd'     }    85.418     0.41914      10.657       24.389      0.14831    0.60593
+    {'highpass'}    83.323     0.42124      12.781        23.67      0.16566     0.6096
+    {'lowpass' }    88.075      0.4591      8.3696       19.585      0.11584    0.77385
+
+
+--- B) True S-Beat Destination for 'none' variant -------
+Total true S beats in DS2 (none variant): 1836
+Predicted breakdown for true S beats:
+  True S -> Predicted N: 1635 beats ( 89.1 %)
+  True S -> Predicted S: 158 beats (  8.6 %)
+  True S -> Predicted V:  34 beats (  1.9 %)
+  True S -> Predicted F:   9 beats (  0.5 %)
+  True S -> Predicted Q:   0 beats (  0.0 %)
+
+--- C) Per-DS2-Patient Breakdown for S-Class -------
+Patient ID | True S | S Found (Pred S) | N-or-other wrongly predicted S
+-------------------------------------------------------------------
+       100 |     33 |                9 |                            0
+       103 |      2 |                0 |                            0
+       105 |      0 |                0 |                            1
+       111 |      0 |                0 |                            0
+       113 |      6 |                0 |                            0
+       117 |      1 |                0 |                            0
+       121 |      1 |                0 |                            1
+       123 |      0 |                0 |                            1
+       200 |     30 |                7 |                           17
+       202 |     55 |               20 |                            0
+       210 |     22 |                0 |                           13
+       212 |      0 |                0 |                            0
+       213 |     28 |                0 |                          116
+       214 |      0 |                0 |                            0
+       219 |      7 |                0 |                          115
+       221 |      0 |                0 |                            1
+       222 |    209 |              117 |                          160
+       228 |      3 |                1 |                            1
+       231 |      1 |                0 |                            0
+       232 |   1381 |                4 |                            0
+       233 |      7 |                0 |                            2
+       234 |     50 |                0 |                            0
+
+Patients ranked by True S count:
+   1. 232: 1381 true S beats (Found: 4, False S: 0)
+   2. 222: 209 true S beats (Found: 117, False S: 160)
+   3. 202: 55 true S beats (Found: 20, False S: 0)
+   4. 234: 50 true S beats (Found: 0, False S: 0)
+   5. 100: 33 true S beats (Found: 9, False S: 0)
+   6. 200: 30 true S beats (Found: 7, False S: 17)
+   7. 213: 28 true S beats (Found: 0, False S: 116)
+   8. 210: 22 true S beats (Found: 0, False S: 13)
+   9. 219: 7 true S beats (Found: 0, False S: 115)
+  10. 233: 7 true S beats (Found: 0, False S: 2)
+  11. 113: 6 true S beats (Found: 0, False S: 0)
+  12. 228: 3 true S beats (Found: 1, False S: 1)
+  13. 103: 2 true S beats (Found: 0, False S: 0)
+  14. 117: 1 true S beats (Found: 0, False S: 0)
+  15. 121: 1 true S beats (Found: 0, False S: 1)
+  16. 231: 1 true S beats (Found: 0, False S: 0)
+  17. 105: 0 true S beats (Found: 0, False S: 1)
+  18. 111: 0 true S beats (Found: 0, False S: 0)
+  19. 123: 0 true S beats (Found: 0, False S: 1)
+  20. 212: 0 true S beats (Found: 0, False S: 0)
+  21. 214: 0 true S beats (Found: 0, False S: 0)
+  22. 221: 0 true S beats (Found: 0, False S: 1)
+
+Concentration Analysis:
+  Top 1 patient holds 75.2 % of all true S beats.
+  Top 3 patients hold 89.6 % of all true S beats.
+  Note: Counts are exact for the evaluated seed (seed 1).
+
+===================== PASTE TO HERE =====================

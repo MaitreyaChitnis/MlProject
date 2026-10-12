@@ -31,9 +31,10 @@ addpath(genpath('src'));
 t_start = tic;
 
 %% ---------------- settings you may edit ----------------
+cfg.run_name      = 'tuned';
 cfg.variant_names = {'none', 'bandpass', 'wavelet', 'emd'};
 cfg.variant_funcs = {@denoise_none, @denoise_bandpass, @denoise_wavelet, @denoise_emd};
-cfg.sources       = {'groundtruth', 'detected'};
+cfg.sources       = {'groundtruth'};
 cfg.n_seeds       = 3;       % forests per combination (different seeds). Use 1 for a quick test
 cfg.n_boot        = 2000;    % patient-level bootstrap resamples
 cfg.use_tuned_config = true; % use the phase-5 settings if data/processed/tuned_rf.mat exists
@@ -44,7 +45,7 @@ cfg.ds_opts       = struct('duration_s', Inf, 'half_window', 90, 'n_avg', 10, ..
 cfg.diagnostic_variants = true;  % adds 'highpass' (0.5 Hz only) and 'lowpass' (40 Hz only)
 cfg.prior_override = '';         % '' = keep model settings below; or 'empirical' | 'sqrt' | 'uniform'
 cfg.leaf_override  = [];         % [] = keep; or a number such as 5
-cfg.out_dir       = fullfile('results', 'integration');
+cfg.out_dir       = fullfile('results', ['integration_' cfg.run_name]);
 cfg.cache_dir     = fullfile('data', 'processed', 'variants');
 % -------------------------------------------------------
 
